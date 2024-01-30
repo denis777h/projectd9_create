@@ -1,0 +1,79 @@
+{% extends 'default.html' %}
+
+{% load custom_filters %}
+{% load custom_tags %}
+
+{% block title %}
+Posts
+{% endblock title %}
+
+{% block content %}
+<h1>Публикации: </h1>
+
+{% if filterset.data.categories %}
+{% for cat in filterset.data.categories %}
+{{ cat|get_category }}
+{% endfor %}
+{% endif %}
+
+<hr>
+{% if post_list %}
+<table>
+    <tr>
+        <td>Заголовок</td>
+        <td>Дата публикации</td>
+        <td>Краткое содержание</td>
+    </tr>
+
+    {% for post in post_list %}
+
+    <tr>
+        <td align="left"><a href="/news/{{post.id}}"> {{ post.title|censor }} </a></td>
+        <td>{{ post.date_time|date:'d M Y' }}</td>
+        <td align="left"> {{ post.text|truncatewords:20|censor }}</td>
+    </tr>
+    <tr>
+        <td colspan="3" align="right">
+            {% for category in post.categories.all %}
+            <a class="button" href="/news/?categories={{ category.id }}"><small> {{ category }} : </small></a>
+            {% endfor %}
+            <a href="/profile/{{post.author.user.id}}"><small>{{ post.author }} : </small></a>
+            <hr>
+        </td>
+    </tr>
+
+    {% endfor %}
+
+</table>
+{% else %}
+<h2>Публикаций нет!</h2>
+{% endif %}
+
+{# Добавляем пагинацию на страницу #}
+
+{# Переход к 1 странице #}
+<a href="?{% url_replace page=1 %}"> << </a>
+
+{% if page_obj.has_previous %}
+{# Для каждой ссылки пагинации указываем обработку через новый тег #}
+<a href="?{% url_replace page=1 %}">1</a>
+{% if page_obj.previous_page_number != 1 %}
+...
+<a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+{% endif %}
+{% endif %}
+
+{{ page_obj.number }}
+
+{% if page_obj.has_next %}
+<a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+{% if paginator.num_pages != page_obj.next_page_number %}
+...
+<a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+{% endif %}
+{% endif %}
+
+{# Переход к последней странице #}
+<a href="?{% url_replace page=page_obj.paginator.num_pages %}"> >> </a>
+
+{% endblock content %}

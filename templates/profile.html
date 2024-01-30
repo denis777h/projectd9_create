@@ -1,0 +1,43 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}
+
+{% block title %}
+Profile
+{% endblock title %}
+
+{% block content %}
+
+<table style="width:100%" ">
+    <tr>
+        <td width="20%">
+            <!--            <p>Страница пользователя</p>-->
+            <h3>{{ object.username }}</h3></td>
+        <td width="20%" align="left"><p>Имя: {{ object.first_name }}</p>
+            <p>Фамилия: {{ object.last_name }}</p>
+            <p>E-mail: {{ object.email }}</p>
+
+        </td>
+        <td align="left">
+            <p>Количество постов: {{ sum_post }}</p>
+            <p>Рейтинг статей: {{ rate }}</p>
+            <hr>
+            <p>Лучшая статья: <small>рейтинг ({{ best_news.rate }})</small></p>
+            <h6>{{ best_news }} : {{ best_news.title }}</h6>
+            <a>{{ best_news_preview }}</a>
+        </td>
+    </tr>
+</table>
+<div class="header">
+    {% if object == user %}
+    <hr>
+    {% if is_not_authors %}
+    <a class="btn btn-light" href="{% url 'upgrade' %}"> Стать автором</a>
+    {% endif %}
+    <a class="btn btn-light" href="/profile/{{ user.id }}/edit/">Изменить</a>
+    <a class="btn btn-light" href="/accounts/logout/">Выйти</a>
+
+    {% endif %}
+    <a class="btn btn-light" href="{{request.META.HTTP_REFERER}}">Назад</a>
+</div>
+{% endblock %}
